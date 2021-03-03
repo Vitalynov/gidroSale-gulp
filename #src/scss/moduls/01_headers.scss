@@ -2,8 +2,8 @@ $accent: #2692ff;
 
 .header {
 	width: 100%;
-	margin-top: 25px;
-	flex:1 1 auto;
+	margin:25px 0 78px 0;
+	
 }
 // Верхняя панель
 .header-top {
@@ -46,7 +46,7 @@ $accent: #2692ff;
 		display: inline-block;
 		width: 30px;
 		height: 30px;
-		background-image: url(../img/icons/point.svg);
+		background-image: url(../img/svg/point.svg);
 	}
 }
 .top-user {

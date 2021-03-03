@@ -1,0 +1,151 @@
+.baner {
+	width: 100%;
+	margin-bottom: 78px;
+}
+.baner__row {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+//слайдер
+.baner__slide {
+	flex: 0 1 67%;
+}
+.baner__swipper {
+}
+.swiper-container {
+}
+.baner__wrapper {
+}
+.swiper-wrapper {
+}
+.swiper-slide {
+}
+.baner__pagination {
+}
+.swiper-pagination {
+}
+
+//акция
+.baner__promotion {
+	flex: 0 1 265px;
+}
+
+.promotion__card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+	width: 100%;
+	border-radius: 3px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.card__plate {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 90px;
+	height: 30px;
+	background-color: $accent;
+
+	text-align: center;
+	font-size: 12px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	line-height: 2.5;
+	color: #fff;
+}
+.card__price {
+	align-self: flex-end;
+	margin: 0 5px 0 0;
+	&--new {
+		text-align: right;
+		font-family: 'Barlow', sans-serif;
+		font-size: 27px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: 32px;
+		color: $accent;
+		text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+		& > i {
+			font-size: 22px;
+		}
+	}
+	&--old {
+		position: relative;
+
+		text-align: right;
+		font-family: 'Barlow', sans-serif;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 17px;
+		color: #c4c4c4;
+		//text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+		& > i {
+			font-size: 12px;
+		}
+		&::after {
+			content: '';
+			position: absolute;
+			right: 6px;
+			bottom: 7px;
+			width: 55px;
+			height: 1px;
+			background-color: #c4c4c4;
+			transform: rotate(-17deg);
+		}
+	}
+}
+
+.card__img {
+	width: 125px;
+	height: 178px;
+	& > img {
+		width: 100%;
+		height: auto;
+	}
+}
+.card__title {
+	width: 205px;
+
+	font-size: 18px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 21px;
+	text-align: center;
+	color: #2f3035;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+}
+.card__footer {
+	display: flex;
+	height: 26%;
+	width: 100%;
+	background-color: #f0f0f4;
+	&--wrapper {
+		margin: auto;
+	}
+}
+.card__valid {
+	font-size: 18px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 21px;
+	text-align: center;
+	color: #2f3035;
+}
+.card__until {
+	font-family: 'Barlow', sans-serif;
+	font-size: 18px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 22px;
+	text-align: center;
+    color: $accent;
+}

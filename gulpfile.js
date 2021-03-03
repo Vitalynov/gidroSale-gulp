@@ -31,6 +31,7 @@ const {
 /*Функция для преобразования картинок.svg в общий файл sprite*/
 const svgSprites = () => {
     return src('#src/assets/img/svg/**.svg')
+        .pipe(dest('dist/img/svg'))
         .pipe(svgSprite({
             mode: {
                 stack: {
@@ -130,7 +131,8 @@ const scripts = () => {
 };
 /*Функция для переноса картинок без жатия*/
 const imgTo = () => {
-    return src('#src/assets/img/**/*.png', '#src/assets/img/**/*.jpg', '#src/assets/img/**/*.jpeg', '#src/assets/img/**/*.ico', '#src/assets/img/**/*.gif', '#src/assets/img/**/*.webp')
+    // return src('#src/assets/img/**/*.jpg', '#src/assets/img/**/*.png', '#src/assets/img/**/*.jpeg', '#src/assets/img/**/*.ico', '#src/assets/img/**/*.gif', '#src/assets/img/**/*.webp')
+    return src('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}')
         .pipe(dest('./dist/img'));
 };
 /*Перенос папок и библиотек*/
@@ -243,12 +245,7 @@ const watchFile = () => {
     watch('#src/assets/json/*.json', series(jsonFolder)).on('change', sync.reload);
     watch('#src/assets/video/**', series(videoFolder)).on('change', sync.reload);
     watch('#src/assets/icons/**', series(iconsFolder)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.png', series(imgTo)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.jpg', series(imgTo)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.jpeg', series(imgTo)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.ico', series(imgTo)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.gif', series(imgTo)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.webp', series(imgTo)).on('change', sync.reload);
+    watch('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}', series(imgTo)).on('change', sync.reload);
     watch('#src/assets/img/svg/**/*.svg', series(svgSprites)).on('change', sync.reload);
     watch('#src/resources/**', series(resources)).on('change', sync.reload);
     watch('#src/assets/fonts/**.ttf', series(fonts)).on('change', sync.reload);
@@ -267,7 +264,7 @@ exports.default = series(clear, parallel(html, scripts, fonts, resources, imgTo,
 //Сборка build:
 /*Функция для переноса картинок с жатием изображений через ресурс https://tinypng.com/*/
 const tinypng = () => {
-    return src('#src/assets/img/**/*.png', '#src/assets/img/**/*.jpg', '#src/assets/img/**/*.jpeg', '#src/assets/img/**/*.ico', '#src/assets/img/**/*.gif', '#src/assets/img/**/*.webp')
+    return src('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}')
         .pipe(tiny({
             key: 'Lk3Zkyc67S57l5tNcDWftwDh6vYF78fF',
             parallel: true,
