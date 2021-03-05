@@ -27,6 +27,10 @@ $accent: #2692ff; //Цвет голубой.
 $text: #9c9c9c; //Цвет серый.
 $maxWidth: 1170; //Максимальная ширина контента для мексина adaptiv-font.
 $svg: #2f3035;
+
+//подключаем vendors
+@import '../../node_modules/swiper/swiper-bundle';
+
 //Пример внесения миксина адаптивного шрифта и контейнера
 // .box p {
 //     @include adaptiv-font(30, 20);

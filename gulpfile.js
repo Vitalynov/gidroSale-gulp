@@ -4,29 +4,36 @@ const {
     dest,
     series,
     parallel,
-    task,
     watch
 } = require('gulp'),
+    autoprefixer = require('gulp-autoprefixer'), // добавление префиксов в .css для кросбраузерности
+    uglify = require('gulp-uglify-es').default,
+    del = require('del'), //плагин удаления
+    sync = require('browser-sync').create(), // сервер
     sass = require('gulp-sass'), //преобразование файла scss в css
     csso = require('gulp-csso'), //сжатие файла css
-    include = require('gulp-file-include'), //сборщик нескольких файдлв .html
-    htmlmin = require('gulp-htmlmin'), // сжатие файла .html
-    del = require('del'), //плагин удаления
-    concat = require('gulp-concat'), //объеденяет файлы ( в нашем случае .css)
-    autoprefixer = require('gulp-autoprefixer'), // добавление префиксов в .css для кросбраузерности
-    notify = require("gulp-notify"), // обработчик ошибки
     rename = require('gulp-rename'), //плагин переименования файлов с расширением .css и .js с префиксом min
+    include = require('gulp-file-include'), //сборщик нескольких файдлв .html
     sourcemaps = require('gulp-sourcemaps'), // показывает ссылки, в каком файле или в дополнительном модуле находится код
+    notify = require("gulp-notify"), // обработчик ошибки
     svgSprite = require('gulp-svg-sprite'), //делает файл sprite из файлов svg
-    ttf2woff = require('gulp-ttf2woff'), //преобразование текста из формата .ttf в .woff
-    ttf2woff2 = require('gulp-ttf2woff2'), //преобразование текста из формата .ttf в .woff2
-    uglify = require('gulp-uglify-es').default,
-    fonter = require('gulp-fonter'), //преобразование текста из формата .otf в .ttf
-    fs = require('fs'),
     webpack = require('webpack'), //webpack
     webpackStream = require('webpack-stream'), //webpack
+    ttf2woff = require('gulp-ttf2woff'), //преобразование текста из формата .ttf в .woff
+    ttf2woff2 = require('gulp-ttf2woff2'), //преобразование текста из формата .ttf в .woff2
+    fs = require('fs'),
     tiny = require('gulp-tinypng-compress'), // сжимает изображения https://tinypng.com/
-    sync = require('browser-sync').create(); // сервер
+    concat = require('gulp-concat'), //объеденяет файлы ( в нашем случае .css)
+    fonter = require('gulp-fonter'), //преобразование текста из формата .otf в .ttf
+    gulpif = require('gulp-if'),
+
+
+
+
+
+    htmlmin = require('gulp-htmlmin'); // сжатие файла .html
+
+let isProd = false; // dev by default
 
 /*Функция для преобразования картинок.svg в общий файл sprite*/
 const svgSprites = () => {
@@ -48,13 +55,16 @@ const html = () => {
             prefix: '@',
             basepath: '@file'
         }))
+        .pipe(gulpif(isProd, htmlmin({
+            collapseWhitespace: true
+        })))
         .pipe(dest('dist'));
 };
 
 /*Функция для работы с файлами .scss*/
 const scss = () => {
     return src('#src/scss/**/*.scss')
-        .pipe(sourcemaps.init())
+        .pipe(gulpif(!isProd, sourcemaps.init()))
         .pipe(sass({
             outputStyle: 'expanded'
         }).on('error', notify.onError()))
@@ -64,11 +74,11 @@ const scss = () => {
         }))
         .pipe(concat('index.css'))
         .pipe(dest('dist/css'))
-        .pipe(csso())
+        .pipe(gulpif(isProd, csso()))
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(sourcemaps.write('.'))
+        .pipe(gulpif(!isProd, sourcemaps.write('.')))
         .pipe(dest('dist/css'));
 };
 
@@ -94,8 +104,8 @@ const iconsFolder = () => {
 
 /*Функция для работы с файлами .js*/
 const scripts = () => {
-    return src('./#src/js/**.js')
-        .pipe(webpackStream({
+    return src('./#src/js/main.js')
+        .pipe(gulpif(!isProd, webpackStream({
             mode: 'development',
             output: {
                 filename: 'main.js'
@@ -114,25 +124,65 @@ const scripts = () => {
                     }
                 }]
             }
-        }))
+        })))
+        .pipe(gulpif(isProd, webpackStream({
+            mode: 'production',
+            output: {
+                filename: 'main.js'
+            },
+            module: {
+                rules: [{
+                    test: /\.m?js$/,
+                    exclude: /(node_modules | help)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                ['@babel/preset-env']
+                            ]
+                        }
+                    }
+                }]
+            }
+        })))
         .on('error', function (err) {
             console.error('WEBPACK ERROR', err);
             this.emit('end');
         })
-        .pipe(sourcemaps.init())
+        .pipe(gulpif(!isProd, sourcemaps.init()))
         .pipe(dest('dist/js/'))
-        .pipe(uglify().on("error", notify.onError()))
+        .pipe(gulpif(isProd, uglify().on("error", notify.onError())))
         .pipe(rename({
             suffix: '.min'
         }))
-        .pipe(sourcemaps.write('.'))
+        .pipe(gulpif(!isProd, sourcemaps.write('.')))
         .pipe(dest('dist/js/'));
 
 };
+// const scripts = () => {
+//     return src(['./#src/js/moduls/**.js', './#src/js/main.js'])
+//         .pipe(gulpif(!isProd, sourcemaps.init()))
+//         .pipe(concat('main.js'))
+//         .pipe(gulpif(isProd, uglify().on("error", notify.onError())))
+//         .pipe(rename({
+//             suffix: '.min'
+//         }))
+//         .pipe(gulpif(!isProd, sourcemaps.write('.')))
+//         .pipe(dest('./dist/js'))
+// };
+
+
 /*Функция для переноса картинок без жатия*/
-const imgTo = () => {
+const img = () => {
     // return src('#src/assets/img/**/*.jpg', '#src/assets/img/**/*.png', '#src/assets/img/**/*.jpeg', '#src/assets/img/**/*.ico', '#src/assets/img/**/*.gif', '#src/assets/img/**/*.webp')
     return src('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}')
+        .pipe(gulpif(isProd, tiny({
+            key: 'Lk3Zkyc67S57l5tNcDWftwDh6vYF78fF',
+            parallel: true,
+            sigFile: 'dist/img/.tinypng-sigs',
+            parallelMax: 50,
+            log: true
+        })))
         .pipe(dest('./dist/img'));
 };
 /*Перенос папок и библиотек*/
@@ -245,97 +295,26 @@ const watchFile = () => {
     watch('#src/assets/json/*.json', series(jsonFolder)).on('change', sync.reload);
     watch('#src/assets/video/**', series(videoFolder)).on('change', sync.reload);
     watch('#src/assets/icons/**', series(iconsFolder)).on('change', sync.reload);
-    watch('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}', series(imgTo)).on('change', sync.reload);
+    watch('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}', series(img)).on('change', sync.reload);
     watch('#src/assets/img/svg/**/*.svg', series(svgSprites)).on('change', sync.reload);
     watch('#src/resources/**', series(resources)).on('change', sync.reload);
     watch('#src/assets/fonts/**.ttf', series(fonts)).on('change', sync.reload);
     watch('#src/assets/fonts/**.ttf', series(fontsStyle)).on('change', sync.reload);
-    watch('#src/js/**.js', series(scripts)).on('change', sync.reload);
+    watch('#src/js/**/*.js', series(scripts)).on('change', sync.reload);
 };
+
+const toProd = (done) => {
+    isProd = true;
+    done();
+};
+
 //exports.watch = watchFile;
 exports.otf2ttf = otf2ttf; // Для преобразования шрифта с формата .otf в формат  .ttf, нужно набрать 
 //команду:gulp otf2ttf. Все шрифты с расширением .otf нужно положить в папку: #src/assets/fonts/
 
 
 //сборка по дефолту, нужно набрать команду: gulp
-exports.default = series(clear, parallel(html, scripts, fonts, resources, imgTo, svgSprites, jsonFolder, videoFolder, iconsFolder), fontsStyle, scss, watchFile);
+exports.default = series(clear, parallel(html, scripts, fonts, resources, img, svgSprites, jsonFolder, videoFolder, iconsFolder), fontsStyle, scss, watchFile);
 
-
-//Сборка build:
-/*Функция для переноса картинок с жатием изображений через ресурс https://tinypng.com/*/
-const tinypng = () => {
-    return src('#src/assets/img/**/*.{jpg,jpeg,png,gif,ico,webp}')
-        .pipe(tiny({
-            key: 'Lk3Zkyc67S57l5tNcDWftwDh6vYF78fF',
-            parallel: true,
-            sigFile: 'dist/img/.tinypng-sigs',
-            parallelMax: 50,
-            log: true
-        }))
-        .pipe(dest('./dist/img'));
-};
-/*Функция для работы с файлами .html*/
-const htmlBuild = () => {
-    return src('#src/html/**.html')
-        .pipe(include({
-            prefix: '@',
-            basepath: '@file'
-        }))
-        .pipe(htmlmin({
-            collapseWhitespace: true
-        }))
-        .pipe(dest('dist'));
-};
-
-/*Функция для работы с файлами .scss*/
-const scssBuild = () => {
-    return src('#src/scss/**/*.scss')
-        .pipe(sass({
-            outputStyle: 'expanded'
-        }).on('error', notify.onError()))
-        .pipe(autoprefixer({
-            overrideBrowserslist: ['last 5 version'],
-            cascade: true
-        }))
-        .pipe(concat('index.css'))
-        .pipe(csso())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(dest('dist/css'));
-};
-/*Функция для работы с файлами .js*/
-const scriptsBuild = () => {
-    return src('./#src/js/**.js')
-        .pipe(webpackStream({
-            mode: 'production',
-            output: {
-                filename: 'main.js'
-            },
-            module: {
-                rules: [{
-                    test: /\.m?js$/,
-                    exclude: /(node_modules | help)/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: [
-                                ['@babel/preset-env']
-                            ]
-                        }
-                    }
-                }]
-            }
-        }))
-        .on('error', function (err) {
-            console.error('WEBPACK ERROR', err);
-            this.emit('end');
-        })
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(dest('dist/js/'));
-};
-//exports.scriptsBuild = scriptsBuild;
 //Что бы собрать сборку build, нужно набрать команду: gulp build
-exports.build = series(clear, parallel(htmlBuild, scriptsBuild, fonts, resources, svgSprites, jsonFolder, videoFolder, iconsFolder), fontsStyle, scssBuild, tinypng);
+exports.build = series(toProd, clear, parallel(html, scripts, fonts, resources, svgSprites, jsonFolder, videoFolder, iconsFolder), fontsStyle, scss, img);

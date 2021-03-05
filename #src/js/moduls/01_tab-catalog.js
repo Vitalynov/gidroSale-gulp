@@ -24,7 +24,7 @@ const tabCatalog = () => {
 
             tabs.forEach((tab, i) => {
                 if (target == tab || target.parentNode == tab) {
-                    
+
                     removeActivClass();
                     addActiveClass(i);
 
@@ -32,7 +32,8 @@ const tabCatalog = () => {
             })
         }
     })
-
-
 }
-export default tabCatalog;
+
+export {
+    tabCatalog
+};
