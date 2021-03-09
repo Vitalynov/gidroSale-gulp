@@ -19,35 +19,10 @@
 // импорт блоков Swiper
 
 
-import Swiper, {
-    Navigation,
-    Pagination,
-    Autoplay
-} from 'swiper';
-
-Swiper.use([Navigation, Pagination, Autoplay]);
-
-
-
-import {
-    tabCatalog
-} from './moduls/01_tab-catalog';
-import {
-    sliderMain
-} from './moduls/02_slider';
 
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
 
-    tabCatalog();
-    sliderMain({
-        sliderName: ".baner__swiper",
-        nextArrow: ".baner__next",
-        prevArrov: ".baner__prev",
-        dots: ".baner__pagination",
-        number: 1,
-        spaceBetween: 0,
-        scrolling: 1
-    });
-})
+
+});

@@ -72,7 +72,7 @@ const scss = () => {
             overrideBrowserslist: ['last 5 version'],
             cascade: true
         }))
-        .pipe(concat('index.css'))
+        //.pipe(concat('index.css'))
         .pipe(dest('dist/css'))
         .pipe(gulpif(isProd, csso()))
         .pipe(rename({

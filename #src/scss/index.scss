@@ -11,16 +11,7 @@
 //font-family: 'Barlow', sans-serif;
 @include font-face('Barlow', 'Barlow-Regular', 400);
 //font-family: 'Barlow', sans-serif;
-@include font-face('ProximaNovaExCn', 'ProximaNovaExCn-BoldIt', 700);
-//font-family: 'ProximaNovaExCn', sans-serif;
-@include font-face('SFProDisplay', 'SFProDisplay-Bold', 700);
-//font-family: 'SFProDisplay', sans-serif;
-@include font-face('SFProDisplay', 'SFProDisplay-Medium', 500);
-//font-family: 'SFProDisplay', sans-serif;
-@include font-face('SFProDisplay', 'SFProDisplay-Regular', 400);
-//font-family: 'SFProDisplay', sans-serif;
-@include font-face('SFProDisplay', 'SFProDisplay-Semibold', 600);
-//font-family: 'SFProDisplay', sans-serif;
+
 
 //Переменные
 $accent: #2692ff; //Цвет голубой.
@@ -53,17 +44,10 @@ body {
 	@include container($maxWidth);
 }
 
-svg {
-	fill: $svg;
-	cursor: pointer;
-	transition: fill 0.2s ease-in;
-	&:hover {
-		fill: $accent;
-	}
-}
+
 /*- Header -*/
 @import 'moduls/01_headers';
 /*- Content -*/
-@import 'moduls/02_baner';
+
 /*- Footer -*/
 @import 'moduls/15_footer';
